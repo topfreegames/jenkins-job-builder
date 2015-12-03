@@ -159,7 +159,14 @@ remoteName/\*')
                 * **timeout** (`int`) - Specify a timeout (in minutes) for
                   submodules operations (default: 10).
 
-        :arg str timeout: Timeout for git commands in minutes (optional)
+        :arg dict checkout-behaviours:
+            :checkout-behaviours:
+                :arg str timeout: Timeout for git commands in minutes (optional)
+        :arg dict clone-behaviours:
+            :clone-behaviours:
+                :arg str timeout: Timeout for git commands in minutes (optional)
+                :arg str reference: Path of the reference repo to use during clone
+                :arg bool shallow: Shallow Clone
         :arg bool wipe-workspace: Wipe out workspace before build
           (default true)
 
@@ -374,9 +381,25 @@ remoteName/\*')
             data['submodule'].get('tracking', False)).lower()
         XML.SubElement(ext, 'timeout').text = str(
             data['submodule'].get('timeout', 10))
-    if 'timeout' in data:
-        co = XML.SubElement(exts_node, impl_prefix + 'CheckoutOption')
-        XML.SubElement(co, 'timeout').text = str(data['timeout'])
+
+    if 'checkout-behaviours' in data:
+        if 'timeout' in data['checkout-behaviours']:
+            co = XML.SubElement(exts_node, impl_prefix + 'CheckoutOption')
+            XML.SubElement(co, 'timeout').text = str(data['timeout'])
+
+    if 'clone-behaviours' in data:
+        if 'timeout' in data['clone-behaviours']:
+            co = XML.SubElement(exts_node, impl_prefix + 'CloneOption')
+            XML.SubElement(co, 'timeout').text = str(data['timeout'])
+        
+        if 'reference' in data['clone-behaviours']:
+            co = XML.SubElement(exts_node, impl_prefix + 'CloneOption')
+            XML.SubElement(co, 'reference').text = str(data['reference'])
+
+        shallow = str(data['clone-behaviours'].get('shallow', False)).lower()
+        co = XML.SubElement(exts_node, impl_prefix + 'CloneOption')
+        XML.SubElement(co, 'shallow').text = shallow
+
     polling_using_workspace = str(data.get('force-polling-using-workspace',
                                            False)).lower()
     if polling_using_workspace == 'true':
