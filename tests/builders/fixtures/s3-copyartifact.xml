@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+  <builders>
+    <hudson.plugins.s3.S3CopyArtifact>
+      <projectName>project-name</projectName>
+      <filter>**/*.filters</filter>
+      <excludeFilter>**/*.exclude</excludeFilter>
+      <target>target</target>
+      <flatten>true</flatten>
+      <optional>true</optional>
+      <selector class="hudson.plugins.copyartifact.ParameterizedBuildSelector">
+        <parameterName>SOURCE_BUILD</parameterName>
+      </selector>
+    </hudson.plugins.s3.S3CopyArtifact>
+  </builders>
+</project>
