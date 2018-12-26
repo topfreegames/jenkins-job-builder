@@ -204,6 +204,36 @@ def copyartifact(registry, xml_parent, data):
     helpers.copyartifact_build_selector(t, data)
 
 
+def s3(registry, xml_parent, data):
+    """yaml: s3
+    Download build artifacts from Amazon S3.
+
+    Requires the Jenkins :jenkins-wiki:`S3 plugin <S3+Plugin>`.
+
+    :arg str project: Project name
+    :arg str filter: List of files to be downloaded
+    :arg str exclude: List of files to be ignored
+    :arg str target: Target directory
+    :arg bool flatten: Flatten directories
+    :arg bool optional: Is optional step
+    
+    Example:
+    .. literalinclude:: /../../tests/publishers/fixtures/s3002.yaml
+       :language: yaml
+    """
+    t = XML.SubElement(xml_parent, 'hudson.plugins.s3.S3CopyArtifact')
+    mappings = [
+        ('project', 'projectName', None),
+        ('filter', 'filter', ''),
+        ('exclude', 'excludeFilter', ''),
+        ('target', 'target', ''),
+        ('flatten', 'flatten', False),
+        ('optional', 'optional', False),
+    ]
+    helpers.convert_mapping_to_xml(t, data, mappings, fail_required=True)
+    helpers.copyartifact_build_selector(t, data)
+
+
 def change_assembly_version(registry, xml_parent, data):
     """yaml: change-assembly-version
     Change the assembly version.

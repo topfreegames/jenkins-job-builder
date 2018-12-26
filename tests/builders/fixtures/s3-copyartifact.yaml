@@ -1,0 +1,10 @@
+builders:
+  - s3:
+      project: 'project-name'
+      which-build: build-param
+      param: SOURCE_BUILD
+      filter: "**/*.filters"
+      exclude: "**/*.exclude"
+      target: "target"
+      optional: true
+      flatten: true
