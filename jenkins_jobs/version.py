@@ -17,4 +17,4 @@
 
 from pbr.version import VersionInfo
 
-version_info = VersionInfo('jenkins-job-builder')
+version_info = VersionInfo('tfg.jenkins-job-builder')
