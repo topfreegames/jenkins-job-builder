@@ -194,6 +194,8 @@ def git(registry, xml_parent, data):
             build changeset (default false)
         * **wipe-workspace** (`bool`) - Wipe out workspace before build
             (default true)
+        * **lfs-pull** (`bool`) - Performs a git lfs pull
+            (default false)
 
 
     Example:
@@ -541,6 +543,16 @@ def git_extensions(xml_parent, data):
         ext_name = impl_prefix + 'WipeWorkspace'
         if trait:
             trait_name = 'WipeWorkspaceTrait'
+            tr = XML.SubElement(xml_parent, trait_prefix + trait_name)
+            ext = XML.SubElement(tr, "extension", {"class": ext_name})
+        else:
+            ext = XML.SubElement(xml_parent, ext_name)
+
+    lfs_pull = str(data.get('lfs-pull', False)).lower()
+    if lfs_pull == 'true':
+        ext_name = impl_prefix + 'GitLFSPull'
+        if trait:
+            trait_name = 'GitLFSPullTrait'
             tr = XML.SubElement(xml_parent, trait_prefix + trait_name)
             ext = XML.SubElement(tr, "extension", {"class": ext_name})
         else:
