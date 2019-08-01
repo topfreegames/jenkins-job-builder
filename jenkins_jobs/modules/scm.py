@@ -1488,7 +1488,6 @@ def dimensions(registry, xml_parent, data):
     helpers.convert_mapping_to_xml(
         scm, data, optional_mapping, fail_required=False)
 
-
 def accurev(registry, xml_parent, data):
     """yaml: accurev
     Specifies the AccuRev SCM repository for this job.
@@ -1548,6 +1547,75 @@ def accurev(registry, xml_parent, data):
     helpers.convert_mapping_to_xml(
         scm, data, additional_mapping, fail_required=False)
 
+def perforce(registry, xml_parent, data):
+    """yaml: perforce
+    Specifies the Perforce SCM repository for this job.
+    Requires the Jenkins :jenkins-wiki:`Perforce Plugin <Perforce+Plugin>`.
+    """    
+    scm_xml = XML.SubElement(xml_parent, 'scm', {'class': 'org.jenkinsci.plugins.p4.PerforceScm', 'plugin':'p4@1.10.2'})
+    scm_mapping_required = [
+        ('credential', 'credential', None),
+    ]
+    helpers.convert_mapping_to_xml(scm_xml, data, scm_mapping_required, fail_required=True)
+
+    workspace_xml = XML.SubElement(scm_xml, 'workspace', {'class': 'org.jenkinsci.plugins.p4.workspace.ManualWorkspaceImpl'})
+    workspace_mapping_required = [
+        ('workspace-name', 'name', None),
+    ]
+    helpers.convert_mapping_to_xml(workspace_xml, data, workspace_mapping_required, fail_required=True)
+    workspace_mapping_optional = [
+        ('workspace-charset', 'charset', 'winansi'),
+        ('workspace-pin-host', 'pinHost', False),
+        ('workspace-cleanup', 'cleanup', False),
+    ]
+    helpers.convert_mapping_to_xml(workspace_xml, data, workspace_mapping_optional, fail_required=False)
+
+    workspace_spec_xml = XML.SubElement(workspace_xml, 'spec')
+    workspace_spec_mapping_required = [
+        ('workspace-spec-view', 'view', None),
+    ]
+    helpers.convert_mapping_to_xml(workspace_spec_xml, data, workspace_spec_mapping_required, fail_required=False)
+    workspace_spec_mapping_optional = [
+        ('workspace-spec-allwrite', 'allwrite', False),
+        ('workspace-spec-clobber', 'clobber', True),
+        ('workspace-spec-compress', 'compress', False),
+        ('workspace-spec-locked', 'locked', False),
+        ('workspace-spec-modtime', 'modtime', False),
+        ('workspace-spec-mdir', 'rmdir', False),
+        ('workspace-spec-stream-name', 'streamName', None),
+        ('workspace-spec-line', 'line', 'LOCAL'),       
+        ('workspace-spec-change-view', 'changeView', None),
+        ('workspace-spec-type', 'type', 'WRITABLE'),
+        ('workspace-spec-server-id', 'serverID', None),
+        ('workspace-spec-backup', 'backup', True),
+    ]
+    helpers.convert_mapping_to_xml(workspace_spec_xml, data, workspace_spec_mapping_optional, fail_required=False)
+
+    populate_xml = XML.SubElement(scm_xml, 'populate', {'class':'org.jenkinsci.plugins.p4.populate.AutoCleanImpl'})
+    populate_mapping_optional = [
+        ('populate-have', 'have', True),
+        ('populate-force', 'force', False),
+        ('populate-modtime', 'modtime', False),
+        ('populate-quiet', 'quiet', True),
+        ('populate-pin', 'pin', None),
+        ('populate-replace', 'replace', True),
+        ('populate-delete', 'delete', True),
+        ('populate-tidy', 'tidy', False),
+    ]
+    helpers.convert_mapping_to_xml(populate_xml, data, populate_mapping_optional, fail_required=False)
+
+    populate_parallel_xml = XML.SubElement(populate_xml, 'parallel')
+    populate_parallel_mapping_optional = [
+        ('populate-parallel-have', 'have', True),
+        ('populate-parallel-force', 'force', False),
+        ('populate-parallel-modtime', 'modtime', False),
+        ('populate-parallel-quiet', 'quiet', True),
+        ('populate-parallel-pin', 'pin', None),
+        ('populate-parallel-replace', 'replace', True),
+        ('populate-parallel-delete', 'delete', True),
+        ('populate-parallel-tidy', 'tidy', False),
+    ]
+    helpers.convert_mapping_to_xml(populate_parallel_xml, data, populate_parallel_mapping_optional, fail_required=False)
 
 class SCM(jenkins_jobs.modules.base.Base):
     sequence = 30
