@@ -1558,38 +1558,50 @@ def perforce(registry, xml_parent, data):
     ]
     helpers.convert_mapping_to_xml(scm_xml, data, scm_mapping_required, fail_required=True)
 
-    workspace_xml = XML.SubElement(scm_xml, 'workspace', {'class': 'org.jenkinsci.plugins.p4.workspace.ManualWorkspaceImpl'})
-    workspace_mapping_required = [
-        ('workspace-name', 'name', None),
-    ]
-    helpers.convert_mapping_to_xml(workspace_xml, data, workspace_mapping_required, fail_required=True)
+    workspace_class = data['workspace-class']
+    raise ValueError('workspace-class' + workspace_class)
+    if workspace_class == 'ManualWorkspaceImpl':
+        workspace_xml = XML.SubElement(scm_xml, 'workspace', {'class': 'org.jenkinsci.plugins.p4.workspace.ManualWorkspaceImpl'})
+        workspace_mapping_required = [
+            ('workspace-name', 'name', None),
+        ]
+        helpers.convert_mapping_to_xml(workspace_xml, data, workspace_mapping_required, fail_required=True)
+        workspace_spec_xml = XML.SubElement(workspace_xml, 'spec')
+        workspace_spec_mapping_required = [
+            ('workspace-spec-view', 'view', None),
+        ]
+        helpers.convert_mapping_to_xml(workspace_spec_xml, data, workspace_spec_mapping_required, fail_required=False)
+        workspace_spec_mapping_optional = [
+            ('workspace-spec-allwrite', 'allwrite', False),
+            ('workspace-spec-clobber', 'clobber', True),
+            ('workspace-spec-compress', 'compress', False),
+            ('workspace-spec-locked', 'locked', False),
+            ('workspace-spec-modtime', 'modtime', False),
+            ('workspace-spec-mdir', 'rmdir', False),
+            ('workspace-spec-stream-name', 'streamName', None),
+            ('workspace-spec-line', 'line', 'LOCAL'),       
+            ('workspace-spec-change-view', 'changeView', None),
+            ('workspace-spec-type', 'type', 'WRITABLE'),
+            ('workspace-spec-server-id', 'serverID', None),
+            ('workspace-spec-backup', 'backup', True),
+        ]
+        helpers.convert_mapping_to_xml(workspace_spec_xml, data, workspace_spec_mapping_optional, fail_required=False)
+    elif workspace_class == 'SteamWorkspaceImpl':
+        workspace_xml = XML.SubElement(scm_xml, 'workspace', {'class': 'org.jenkinsci.plugins.p4.workspace.StreamWorkspaceImpl'})
+        workspace_mapping_required = [
+            ('workspace-stream-name', 'streamName', None),
+            ('workspace-format', 'format', None),
+        ]
+        helpers.convert_mapping_to_xml(workspace_xml, data, workspace_mapping_required, fail_required=True)
+    else:
+        raise ValueError('Invalid workspace-class')
+
     workspace_mapping_optional = [
         ('workspace-charset', 'charset', 'winansi'),
         ('workspace-pin-host', 'pinHost', False),
         ('workspace-cleanup', 'cleanup', False),
     ]
     helpers.convert_mapping_to_xml(workspace_xml, data, workspace_mapping_optional, fail_required=False)
-
-    workspace_spec_xml = XML.SubElement(workspace_xml, 'spec')
-    workspace_spec_mapping_required = [
-        ('workspace-spec-view', 'view', None),
-    ]
-    helpers.convert_mapping_to_xml(workspace_spec_xml, data, workspace_spec_mapping_required, fail_required=False)
-    workspace_spec_mapping_optional = [
-        ('workspace-spec-allwrite', 'allwrite', False),
-        ('workspace-spec-clobber', 'clobber', True),
-        ('workspace-spec-compress', 'compress', False),
-        ('workspace-spec-locked', 'locked', False),
-        ('workspace-spec-modtime', 'modtime', False),
-        ('workspace-spec-mdir', 'rmdir', False),
-        ('workspace-spec-stream-name', 'streamName', None),
-        ('workspace-spec-line', 'line', 'LOCAL'),       
-        ('workspace-spec-change-view', 'changeView', None),
-        ('workspace-spec-type', 'type', 'WRITABLE'),
-        ('workspace-spec-server-id', 'serverID', None),
-        ('workspace-spec-backup', 'backup', True),
-    ]
-    helpers.convert_mapping_to_xml(workspace_spec_xml, data, workspace_spec_mapping_optional, fail_required=False)
 
     populate_xml = XML.SubElement(scm_xml, 'populate', {'class':'org.jenkinsci.plugins.p4.populate.AutoCleanImpl'})
     populate_mapping_optional = [
