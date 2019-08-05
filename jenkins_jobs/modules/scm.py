@@ -1559,7 +1559,6 @@ def perforce(registry, xml_parent, data):
     helpers.convert_mapping_to_xml(scm_xml, data, scm_mapping_required, fail_required=True)
 
     workspace_class = data['workspace-class']
-    raise ValueError('workspace-class' + workspace_class)
     if workspace_class == 'ManualWorkspaceImpl':
         workspace_xml = XML.SubElement(scm_xml, 'workspace', {'class': 'org.jenkinsci.plugins.p4.workspace.ManualWorkspaceImpl'})
         workspace_mapping_required = [
@@ -1586,7 +1585,7 @@ def perforce(registry, xml_parent, data):
             ('workspace-spec-backup', 'backup', True),
         ]
         helpers.convert_mapping_to_xml(workspace_spec_xml, data, workspace_spec_mapping_optional, fail_required=False)
-    elif workspace_class == 'SteamWorkspaceImpl':
+    elif workspace_class == 'StreamWorkspaceImpl':
         workspace_xml = XML.SubElement(scm_xml, 'workspace', {'class': 'org.jenkinsci.plugins.p4.workspace.StreamWorkspaceImpl'})
         workspace_mapping_required = [
             ('workspace-stream-name', 'streamName', None),
